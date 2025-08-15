@@ -1,4 +1,4 @@
-import { Schedules } from '../../schedules/entities/schedule.entity';
+import { Schedule } from '../../schedules/entities/schedule.entity';
 
 import {
   Entity,
@@ -14,13 +14,13 @@ export enum MovieStatus {
   NOW_SHOWING = 'NOW_SHOWING',
 }
 
-@Entity()
-export class Movies {
+@Entity('Movies')
+export class Movie {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToMany(() => Schedules, (schedule) => schedule.movie)
-  schedules: Schedules[];
+  @OneToMany(() => Schedule, (schedule) => schedule.movie)
+  schedules: Schedule[];
 
   @Column({ type: 'text' })
   poster: string;

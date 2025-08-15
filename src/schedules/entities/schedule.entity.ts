@@ -7,19 +7,19 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Movies } from '../../movies/entities/movie.entity';
+import { Movie } from '../../movies/entities/movie.entity';
 
-@Entity()
-export class Schedules {
+@Entity('Schedules')
+export class Schedule {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ type: 'uuid' })
   movie_id: string;
 
-  @ManyToOne(() => Movies, (movie) => movie.schedules)
+  @ManyToOne(() => Movie, (movie) => movie.schedules)
   @JoinColumn({ name: 'movie_id' })
-  movie: Movies;
+  movie: Movie;
 
   @Column({ type: 'varchar', length: 10 })
   day: string;
