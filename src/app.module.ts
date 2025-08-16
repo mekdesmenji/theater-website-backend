@@ -5,6 +5,11 @@ import { AppService } from './app.service';
 import { MoviesModule } from './movies/movies.module';
 import { SchedulesModule } from './schedules/schedules.module';
 import { UsersModule } from './users/users.module';
+import { AdminsModule } from './admins/admins.module';
+import { HistorysModule } from './historys/historys.module';
+import { NewsModule } from './news/news.module';
+import { SettingsModule } from './settings/settings.module';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -21,6 +26,11 @@ import { UsersModule } from './users/users.module';
     MoviesModule,
     SchedulesModule,
     UsersModule,
+    AdminsModule,
+    HistorysModule,
+    NewsModule,
+    SettingsModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

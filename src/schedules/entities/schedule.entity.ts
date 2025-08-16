@@ -6,10 +6,12 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  Unique,
 } from 'typeorm';
 import { Movie } from '../../movies/entities/movie.entity';
 
 @Entity('Schedules')
+@Unique(['movie_id', 'hall', 'start_time'])
 export class Schedule {
   @PrimaryGeneratedColumn('uuid')
   id: string;

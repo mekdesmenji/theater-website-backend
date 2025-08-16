@@ -11,10 +11,6 @@ export class CreateScheduleDto {
 
   @IsString()
   @IsNotEmpty()
-  movie_title: string;
-
-  @IsString()
-  @IsNotEmpty()
   start_time: string;
 
   @IsString()
