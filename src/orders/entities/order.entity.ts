@@ -7,17 +7,17 @@ import {
 } from 'typeorm';
 
 export enum payment_method {
-  MobileMoneyTelebirr = 'Mobile Money (Telebirr)',
-  MobileMoneyCBEBirr = 'Mobile Money (CBE Birr)',
+  MOBILEMONEYTELEBIRR = 'Mobile Money (Telebirr)',
+  MOBILEMONEYCBEBIRR = 'Mobile Money (CBE Birr)',
 }
 
 export enum PaymentStatus {
-  PENDING = 'Booked',
-  COMPLETED = 'Confirmed',
-  FAILED = 'Issued',
-  CHECKED_IN = 'Checked-in',
-  CANCELLED = 'Cancelled',
-  EXPIRED = 'Expired',
+  BOOKED = 'BOOKED',
+  CONFIRMED = 'CONFIRMED',
+  ISSUED = 'ISSUED',
+  CHECKED_IN = 'CHECKED_IN',
+  CANCELLED = 'CANCELLED',
+  EXPIRED = 'EXPIRED',
 }
 
 @Entity('Orders')
@@ -45,9 +45,6 @@ export class Order {
 
   @Column({ type: 'numeric', precision: 10, scale: 2 })
   total_price: number;
-
-  @Column({ type: 'varchar', length: 255 })
-  movie_title: string;
 
   @Column({ type: 'enum', enum: PaymentStatus })
   status: PaymentStatus;

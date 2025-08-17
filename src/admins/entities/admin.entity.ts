@@ -7,13 +7,13 @@ import {
 } from 'typeorm';
 
 export enum AdminRole {
-  ADMIN = 'admin',
-  MANAGER = 'manager',
+  ADMIN = 'ADMIN',
+  MANAGER = 'MANAGER',
 }
 
 export enum AdminStatus {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
 }
 
 @Entity('Admins')
