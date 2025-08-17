@@ -6,12 +6,12 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-export enum payment_method {
-  MOBILEMONEYTELEBIRR = 'Mobile Money (Telebirr)',
-  MOBILEMONEYCBEBIRR = 'Mobile Money (CBE Birr)',
+export enum Payment_method {
+  TELEBIRR = 'TELEBIRR',
+  CBE_BIRR = 'CBE_BIRR',
 }
 
-export enum PaymentStatus {
+export enum OrderStatus {
   BOOKED = 'BOOKED',
   CONFIRMED = 'CONFIRMED',
   ISSUED = 'ISSUED',
@@ -46,11 +46,11 @@ export class Order {
   @Column({ type: 'numeric', precision: 10, scale: 2 })
   total_price: number;
 
-  @Column({ type: 'enum', enum: PaymentStatus })
-  status: PaymentStatus;
+  @Column({ type: 'enum', enum: OrderStatus })
+  status: OrderStatus;
 
-  @Column({ type: 'enum', enum: payment_method })
-  payment_method: payment_method;
+  @Column({ type: 'enum', enum: Payment_method })
+  payment_method: Payment_method;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

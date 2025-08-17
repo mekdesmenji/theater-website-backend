@@ -5,9 +5,17 @@ import {
   IsArray,
   IsString,
 } from 'class-validator';
-import { payment_method, PaymentStatus } from '../entities/order.entity';
+import { Payment_method, OrderStatus } from '../entities/order.entity';
 
 export class CreateOrderDto {
+  @IsString()
+  @IsNotEmpty()
+  user_id: string;
+
+  @IsString()
+  @IsNotEmpty()
+  schedule_id: string;
+
   @IsNotEmpty()
   @IsString()
   show_date: string;
@@ -21,11 +29,11 @@ export class CreateOrderDto {
   @IsString({ each: true })
   seats: string[];
 
-  @IsEnum(payment_method)
-  payment_method: payment_method;
+  @IsEnum(Payment_method)
+  payment_method: Payment_method;
 
-  @IsEnum(PaymentStatus)
-  status: PaymentStatus;
+  @IsEnum(OrderStatus)
+  status: OrderStatus;
 
   @IsNotEmpty()
   @IsNumber()
