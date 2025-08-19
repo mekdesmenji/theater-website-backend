@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+import { ApiProperty, ApiResponse } from '@nestjs/swagger';
 export enum Payment_method {
   TELEBIRR = 'TELEBIRR',
   CBE_BIRR = 'CBE_BIRR',
@@ -22,12 +23,20 @@ export enum OrderStatus {
 
 @Entity('Orders')
 export class Order {
+  @ApiProperty({
+    example: '0000-0000-0000-0000',
+    description: 'ID of the user placing the order',
+  })
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ type: 'uuid' })
   user_id: string;
 
+  @ApiProperty({
+    example: 'schedule456',
+    description: 'ID of the selected schedule',
+  })
   @Column({ type: 'uuid' })
   schedule_id: string;
 

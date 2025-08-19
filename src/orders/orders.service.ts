@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -20,8 +20,26 @@ export class OrdersService {
     return this.ordersRepository.find();
   }
 
-  findOne(id: string) {
-    return this.ordersRepository.findOne({ where: { id } });
+  async findOne(id: string) {
+    try {
+      const order = await this.ordersRepository.findOne({ where: { id } });
+
+      if (!order) {
+        throw new Error('Order not found');
+      }
+      return order;
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Order not found',
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error,
+        },
+      );
+    }
   }
 
   update(id: string, updateOrderDto: UpdateOrderDto) {
