@@ -51,14 +51,22 @@ export class OrdersController {
   }
 
   @Patch(':id')
-  @ApiResponse({ status: 200, description: 'Order updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Order updated successfully',
+    type: Order,
+  })
   @ApiResponse({ status: 404, description: 'Order not found' })
   update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
     return this.ordersService.update(id, updateOrderDto);
   }
 
   @Delete(':id')
-  @ApiResponse({ status: 200, description: 'Order deleted successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Order deleted successfully',
+    type: Order,
+  })
   @ApiResponse({ status: 404, description: 'Order not found' })
   remove(@Param('id') id: string) {
     return this.ordersService.remove(id);
