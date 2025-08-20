@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 import { ApiProperty } from '@nestjs/swagger';
-export enum Payment_method {
+export enum PaymentMethod {
   TELEBIRR = 'TELEBIRR',
   CBE_BIRR = 'CBE_BIRR',
 }
@@ -70,16 +70,20 @@ export class Order {
   @ApiProperty({
     example: OrderStatus.BOOKED,
     description: 'Current status of the order',
+    enum: OrderStatus,
+    enumName: 'OrderStatus',
   })
   @Column({ type: 'enum', enum: OrderStatus })
   status: OrderStatus;
 
   @ApiProperty({
-    example: Payment_method.TELEBIRR,
+    example: PaymentMethod.TELEBIRR,
     description: 'Payment method used',
+    enum: PaymentMethod,
+    enumName: 'PaymentMethod',
   })
-  @Column({ type: 'enum', enum: Payment_method })
-  payment_method: Payment_method;
+  @Column({ type: 'enum', enum: PaymentMethod })
+  payment_method: PaymentMethod;
 
   @ApiProperty({
     example: '2025-08-20T10:00:00Z',

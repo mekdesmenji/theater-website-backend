@@ -6,7 +6,7 @@ import {
   IsString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Payment_method, OrderStatus } from '../entities/order.entity';
+import { PaymentMethod, OrderStatus } from '../entities/order.entity';
 
 export class CreateOrderDto {
   @ApiProperty({
@@ -45,11 +45,11 @@ export class CreateOrderDto {
   seats: string[];
 
   @ApiProperty({
-    example: Payment_method.TELEBIRR,
+    example: PaymentMethod.TELEBIRR,
     description: 'Payment method used',
   })
-  @IsEnum(Payment_method)
-  payment_method: Payment_method;
+  @IsEnum(PaymentMethod)
+  payment_method: PaymentMethod;
 
   @ApiProperty({
     example: OrderStatus.BOOKED,

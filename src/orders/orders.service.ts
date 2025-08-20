@@ -42,8 +42,17 @@ export class OrdersService {
     }
   }
 
-  update(id: string, updateOrderDto: UpdateOrderDto) {
-    return this.ordersRepository.update(id, updateOrderDto);
+  async update(id: string, updateOrderDto: UpdateOrderDto) {
+    const order = await this.findOne(id);
+
+    Object.assign(order, updateOrderDto);
+
+    try {
+      return await this.ordersRepository.save(order);
+    } catch (error) {
+      console.error('Error saving updated order:', error);
+      throw error;
+    }
   }
 
   remove(id: string) {
