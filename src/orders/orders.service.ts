@@ -55,7 +55,32 @@ export class OrdersService {
     }
   }
 
-  remove(id: string) {
-    return this.ordersRepository.delete(id);
+  //which should be used to delete an order
+
+  // remove(id: string) {
+  //   return this.ordersRepository.delete(id);
+  // }
+
+  // async remove(id: string) {
+  //   try {
+  //     const result = await this.ordersRepository.delete(id);
+  //     if (result.affected === 0) {
+  //       throw new NotFoundException(`Order with id ${id} not found`);
+  //     }
+  //     return { message: 'Order deleted successfully' };
+  //   } catch (error) {
+  //     console.error('Error deleting order:', error);
+  //     throw error;
+  //   }
+  // }
+
+  async remove(id: string) {
+    const order = await this.findOne(id);
+    try {
+      return await this.ordersRepository.remove(order);
+    } catch (error) {
+      console.error('Error removing order:', error);
+      throw error;
+    }
   }
 }

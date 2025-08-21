@@ -47,6 +47,7 @@ export class CreateOrderDto {
   @ApiProperty({
     example: PaymentMethod.TELEBIRR,
     description: 'Payment method used',
+    enum: PaymentMethod,
   })
   @IsEnum(PaymentMethod)
   payment_method: PaymentMethod;
@@ -54,6 +55,7 @@ export class CreateOrderDto {
   @ApiProperty({
     example: OrderStatus.BOOKED,
     description: 'Current status of the order',
+    enum: OrderStatus,
   })
   @IsEnum(OrderStatus)
   status: OrderStatus;

@@ -4,6 +4,7 @@ import { CreateScheduleDto } from './dto/create-schedule.dto';
 import { UpdateScheduleDto } from './dto/update-schedule.dto';
 import { Repository } from 'typeorm';
 import { Schedule } from './entities/schedule.entity';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 @Injectable()
 export class SchedulesService {
@@ -35,8 +36,28 @@ export class SchedulesService {
     return this.schedulesRepository.find();
   }
 
-  findOne(id: string) {
-    return this.schedulesRepository.findOne({ where: { id } });
+  async findOne(id: string) {
+    try {
+      const schedule = await this.schedulesRepository.findOne({
+        where: { id },
+      });
+
+      if (!schedule) {
+        throw new Error('Schedule not found');
+      }
+      return schedule;
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Schedule not found',
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error,
+        },
+      );
+    }
   }
 
   async update(id: string, updateScheduleDto: UpdateScheduleDto) {
@@ -57,7 +78,13 @@ export class SchedulesService {
     return this.schedulesRepository.update(id, updateScheduleDto);
   }
 
-  remove(id: string) {
-    return this.schedulesRepository.delete(id);
+  async remove(id: string) {
+    const schedule = await this.findOne(id);
+    try {
+      return await this.schedulesRepository.remove(schedule);
+    } catch (error) {
+      console.error('Error removing schedule:', error);
+      throw error;
+    }
   }
 }

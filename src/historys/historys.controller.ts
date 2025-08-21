@@ -11,6 +11,7 @@ import { ApiTags, ApiResponse } from '@nestjs/swagger';
 import { HistorysService } from './historys.service';
 import { CreateHistoryDto } from './dto/create-history.dto';
 import { UpdateHistoryDto } from './dto/update-history.dto';
+import { History } from './entities/history.entity';
 
 @ApiTags('Historys')
 @Controller('historys')
@@ -22,19 +23,27 @@ export class HistorysController {
     status: 201,
     description: 'History item created successfully',
   })
-  @ApiResponse({ status: 400, description: 'Validation failed' })
+  @ApiResponse({ status: 400, description: 'Validation failed', type: History })
   create(@Body() createHistoryDto: CreateHistoryDto) {
     return this.historysService.create(createHistoryDto);
   }
 
   @Get()
-  @ApiResponse({ status: 200, description: 'List of all history items' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of all history items',
+    type: [History],
+  })
   findAll() {
     return this.historysService.findAll();
   }
 
   @Get(':id')
-  @ApiResponse({ status: 200, description: 'History item details' })
+  @ApiResponse({
+    status: 200,
+    description: 'History item details',
+    type: History,
+  })
   @ApiResponse({ status: 404, description: 'History item not found' })
   findOne(@Param('id') id: string) {
     return this.historysService.findOne(id);
@@ -44,6 +53,7 @@ export class HistorysController {
   @ApiResponse({
     status: 200,
     description: 'History item updated successfully',
+    type: History,
   })
   @ApiResponse({ status: 404, description: 'History item not found' })
   update(@Param('id') id: string, @Body() updateHistoryDto: UpdateHistoryDto) {
@@ -54,6 +64,7 @@ export class HistorysController {
   @ApiResponse({
     status: 200,
     description: 'History item deleted successfully',
+    type: History,
   })
   @ApiResponse({ status: 404, description: 'History item not found' })
   remove(@Param('id') id: string) {

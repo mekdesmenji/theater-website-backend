@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Movie } from './entities/movie.entity';
-
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 
@@ -22,15 +22,48 @@ export class MoviesService {
     return this.movieRepository.find();
   }
 
-  findOne(id: string) {
-    return this.movieRepository.findOne({ where: { id } });
+  async findOne(id: string) {
+    try {
+      const movie = await this.movieRepository.findOne({ where: { id } });
+
+      if (!movie) {
+        throw new Error('Movie not found');
+      }
+      return movie;
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Movie not found',
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error,
+        },
+      );
+    }
   }
 
-  update(id: string, updateMovieDto: UpdateMovieDto) {
-    return this.movieRepository.update(id, updateMovieDto);
+  async update(id: string, updateMovieDto: UpdateMovieDto) {
+    const movie = await this.findOne(id);
+
+    Object.assign(movie, updateMovieDto);
+
+    try {
+      return await this.movieRepository.save(movie);
+    } catch (error) {
+      console.error('Error saving updated movie:', error);
+      throw error;
+    }
   }
 
-  remove(id: string) {
-    return this.movieRepository.delete(id);
+  async remove(id: string) {
+    const movie = await this.findOne(id);
+    try {
+      return await this.movieRepository.remove(movie);
+    } catch (error) {
+      console.error('Error removing movie:', error);
+      throw error;
+    }
   }
 }

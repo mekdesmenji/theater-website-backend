@@ -4,9 +4,13 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
-
 import { ApiProperty } from '@nestjs/swagger';
+import { User } from 'src/users/entities/user.entity';
+import { Schedule } from 'src/schedules/entities/schedule.entity';
+
 export enum PaymentMethod {
   TELEBIRR = 'TELEBIRR',
   CBE_BIRR = 'CBE_BIRR',
@@ -30,19 +34,29 @@ export class Order {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @ManyToOne(() => User, (user) => user.order, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
   @ApiProperty({
     example: '0000-0000-0000-0000',
     description: 'ID of the user placing the order',
   })
-  @Column({ type: 'uuid' })
-  user_id: string;
+  @Column({ type: 'uuid', nullable: true })
+  user_id: string | null;
+
+  @ManyToOne(() => Schedule, (schedule) => schedule.order, {
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'schedule_id' })
+  schedule: Schedule;
 
   @ApiProperty({
     example: 'schedule456',
     description: 'ID of the selected schedule',
   })
   @Column({ type: 'uuid' })
-  schedule_id: string;
+  schedule_id: string | null;
 
   @ApiProperty({ example: '2025-08-20', description: 'Date of the show' })
   @Column({ type: 'date' })
@@ -84,6 +98,9 @@ export class Order {
   })
   @Column({ type: 'enum', enum: PaymentMethod })
   payment_method: PaymentMethod;
+
+  @Column({ type: 'text', nullable: true })
+  deleted_user_info: string | null;
 
   @ApiProperty({
     example: '2025-08-20T10:00:00Z',
