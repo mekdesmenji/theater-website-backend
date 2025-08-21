@@ -11,7 +11,11 @@ export class SettingsService {
     private settingsRepository: Repository<Setting>,
   ) {}
 
-  create(createSettingDto: CreateSettingDto) {
+  async create(createSettingDto: CreateSettingDto) {
+    const settingExists = await this.findAll();
+    if (settingExists.length > 0) {
+      return this.update(settingExists[0].id, createSettingDto);
+    }
     const setting = this.settingsRepository.create(createSettingDto);
     return this.settingsRepository.save(setting);
   }

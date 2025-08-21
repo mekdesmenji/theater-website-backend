@@ -45,6 +45,11 @@ export class Order {
   @Column({ type: 'uuid', nullable: true })
   user_id: string | null;
 
+  @ApiProperty({
+    example: 'schedule456',
+    description: 'ID of the selected schedule',
+    type: () => Schedule,
+  })
   @ManyToOne(() => Schedule, (schedule) => schedule.order, {
     onDelete: 'SET NULL',
   })

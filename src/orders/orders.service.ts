@@ -17,7 +17,10 @@ export class OrdersService {
   }
 
   findAll() {
-    return this.ordersRepository.find();
+    return this.ordersRepository.find({
+      relations: ['user', 'schedule', 'schedule.movie'],
+      order: { created_at: 'DESC' },
+    });
   }
 
   async findOne(id: string) {
@@ -75,9 +78,11 @@ export class OrdersService {
   // }
 
   async remove(id: string) {
-    const order = await this.findOne(id);
+    // const order = await this.findOne(id);
     try {
-      return await this.ordersRepository.remove(order);
+      const order = await this.ordersRepository.findOne({ where: { id } });
+
+      return await this.ordersRepository.remove(order!);
     } catch (error) {
       console.error('Error removing order:', error);
       throw error;

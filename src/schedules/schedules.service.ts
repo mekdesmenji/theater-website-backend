@@ -33,7 +33,9 @@ export class SchedulesService {
   }
 
   findAll() {
-    return this.schedulesRepository.find();
+    return this.schedulesRepository.find({
+      relations: ['movie'],
+    });
   }
 
   async findOne(id: string) {

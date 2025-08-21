@@ -24,7 +24,7 @@ export class Movie {
   id: string;
 
   @OneToMany(() => Schedule, (schedule) => schedule.movie)
-  schedule: Schedule[];
+  schedules: Schedule[];
 
   @ApiProperty({
     example: 'https://example.com/poster.jpg',

@@ -19,7 +19,9 @@ export class MoviesService {
   }
 
   findAll() {
-    return this.movieRepository.find();
+    return this.movieRepository.find({
+      relations: ['schedules'],
+    });
   }
 
   async findOne(id: string) {
