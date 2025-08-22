@@ -13,7 +13,19 @@ export class MoviesService {
     private readonly movieRepository: Repository<Movie>,
   ) {}
 
-  create(createMovieDto: CreateMovieDto) {
+  async create(createMovieDto: CreateMovieDto) {
+    const movieexists = await this.movieRepository.findOne({
+      where: { title: createMovieDto.title },
+    });
+    if (movieexists) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Movie already exists',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const movie = this.movieRepository.create(createMovieDto);
     return this.movieRepository.save(movie);
   }

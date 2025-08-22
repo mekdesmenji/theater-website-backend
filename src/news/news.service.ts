@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { UpdateNewsDto } from './dto/update-news.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,7 +11,23 @@ export class NewsService {
     private newsRepository: Repository<News>,
   ) {}
 
-  create(createNewsDto: CreateNewsDto) {
+  async create(createNewsDto: CreateNewsDto) {
+    const newsexistes = await this.newsRepository.findOne({
+      where: {
+        news_title: createNewsDto.news_title,
+        news_summary: createNewsDto.news_summary,
+        news_content: createNewsDto.news_content,
+      },
+    });
+    if (newsexistes) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'News already exists',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const news = this.newsRepository.create(createNewsDto);
     return this.newsRepository.save(news);
   }

@@ -77,15 +77,53 @@ export class OrdersService {
   //   }
   // }
 
+  // async remove(id: string) {
+  //   const order = await this.findOne(id);
+  //   try {
+  //     const order = await this.ordersRepository.findOne({ where: { id } });
+
+  //     return await this.ordersRepository.remove(order!);
+  //   } catch (error) {
+  //     console.error('Error removing order:', error);
+  //     throw error;
+  //   }
+  // }
+
   async remove(id: string) {
-    // const order = await this.findOne(id);
     try {
       const order = await this.ordersRepository.findOne({ where: { id } });
 
-      return await this.ordersRepository.remove(order!);
+      if (!order) {
+        throw new HttpException(
+          `Order with ID ${id} not found`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      return await this.ordersRepository.remove(order);
     } catch (error) {
       console.error('Error removing order:', error);
       throw error;
     }
   }
+
+  // async remove(id: string) {
+  //   try {
+  //     const order = await this.findOne(id);
+
+  //     return await this.ordersRepository.remove(order);
+  //   } catch (error) {
+  //     console.error('Error removing order:', error);
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.BAD_REQUEST,
+  //         error: 'Failed to remove order',
+  //       },
+  //       HttpStatus.BAD_REQUEST,
+  //       {
+  //         cause: error,
+  //       },
+  //     );
+  //   }
+  // }
 }

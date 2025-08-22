@@ -7,7 +7,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { User } from 'src/users/entities/user.entity';
 import { Schedule } from 'src/schedules/entities/schedule.entity';
 
@@ -36,6 +36,10 @@ export class Order {
 
   @ManyToOne(() => User, (user) => user.order, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'user_id' })
+  @ApiPropertyOptional({
+    description: 'The user who placed the order. Null if the user was deleted.',
+    type: () => User,
+  })
   user: User;
 
   @ApiProperty({
