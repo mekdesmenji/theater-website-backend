@@ -27,8 +27,8 @@ export class Setting {
     example: '2005-08-20',
     description: 'Date when the cinema was established',
   })
-  @Column({ type: 'date' })
-  established_date: string;
+  @Column({ type: 'date', nullable: true })
+  established_date: string | null;
 
   @ApiProperty({
     example: 'https://example.com/cinema.jpg',

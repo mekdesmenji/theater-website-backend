@@ -38,6 +38,11 @@ export class Order {
   @JoinColumn({ name: 'user_id' })
   @ApiPropertyOptional({
     description: 'The user who placed the order. Null if the user was deleted.',
+    example: {
+      id: 1,
+      name: 'John Doe',
+      email: 'john@example.com',
+    },
     type: () => User,
   })
   user: User;

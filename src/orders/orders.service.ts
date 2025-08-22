@@ -58,37 +58,6 @@ export class OrdersService {
     }
   }
 
-  //which should be used to delete an order
-
-  // remove(id: string) {
-  //   return this.ordersRepository.delete(id);
-  // }
-
-  // async remove(id: string) {
-  //   try {
-  //     const result = await this.ordersRepository.delete(id);
-  //     if (result.affected === 0) {
-  //       throw new NotFoundException(`Order with id ${id} not found`);
-  //     }
-  //     return { message: 'Order deleted successfully' };
-  //   } catch (error) {
-  //     console.error('Error deleting order:', error);
-  //     throw error;
-  //   }
-  // }
-
-  // async remove(id: string) {
-  //   const order = await this.findOne(id);
-  //   try {
-  //     const order = await this.ordersRepository.findOne({ where: { id } });
-
-  //     return await this.ordersRepository.remove(order!);
-  //   } catch (error) {
-  //     console.error('Error removing order:', error);
-  //     throw error;
-  //   }
-  // }
-
   async remove(id: string) {
     try {
       const order = await this.ordersRepository.findOne({ where: { id } });
@@ -106,24 +75,4 @@ export class OrdersService {
       throw error;
     }
   }
-
-  // async remove(id: string) {
-  //   try {
-  //     const order = await this.findOne(id);
-
-  //     return await this.ordersRepository.remove(order);
-  //   } catch (error) {
-  //     console.error('Error removing order:', error);
-  //     throw new HttpException(
-  //       {
-  //         status: HttpStatus.BAD_REQUEST,
-  //         error: 'Failed to remove order',
-  //       },
-  //       HttpStatus.BAD_REQUEST,
-  //       {
-  //         cause: error,
-  //       },
-  //     );
-  //   }
-  // }
 }
