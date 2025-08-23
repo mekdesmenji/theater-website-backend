@@ -117,6 +117,9 @@ export class Order {
   @Column({ type: 'text', nullable: true })
   deleted_user_info: string | null;
 
+  @Column({ type: 'text', nullable: true })
+  searchTags: string | null;
+
   @ApiProperty({
     example: '2025-08-20T10:00:00Z',
     description: 'The date and time when the record was created.',

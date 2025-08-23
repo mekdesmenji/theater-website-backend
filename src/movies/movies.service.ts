@@ -66,18 +66,40 @@ export class MoviesService {
     try {
       return await this.movieRepository.save(movie);
     } catch (error) {
-      console.error('Error saving updated movie:', error);
-      throw error;
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: `Failed to update movie with ID ${id}`,
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error,
+        },
+      );
     }
   }
 
   async remove(id: string) {
     const movie = await this.findOne(id);
+
     try {
-      return await this.movieRepository.remove(movie);
+      await this.movieRepository.remove(movie);
+
+      return {
+        status: HttpStatus.OK,
+        message: `Movie with ID ${id} has been removed successfully`,
+      };
     } catch (error) {
-      console.error('Error removing movie:', error);
-      throw error;
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: `Failed to remove movie with ID ${id}`,
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error,
+        },
+      );
     }
   }
 }

@@ -53,26 +53,40 @@ export class OrdersService {
     try {
       return await this.ordersRepository.save(order);
     } catch (error) {
-      console.error('Error saving updated order:', error);
-      throw error;
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: `Failed to update order with ID ${id}`,
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error,
+        },
+      );
     }
   }
 
   async remove(id: string) {
+    const order = await this.findOne(id);
+
     try {
-      const order = await this.ordersRepository.findOne({ where: { id } });
+      await this.ordersRepository.remove(order);
 
-      if (!order) {
-        throw new HttpException(
-          `Order with ID ${id} not found`,
-          HttpStatus.NOT_FOUND,
-        );
-      }
-
-      return await this.ordersRepository.remove(order);
+      return {
+        status: HttpStatus.OK,
+        message: `Order with ID ${id} has been removed successfully`,
+      };
     } catch (error) {
-      console.error('Error removing order:', error);
-      throw error;
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: `Failed to remove order with ID ${id}`,
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error,
+        },
+      );
     }
   }
 }

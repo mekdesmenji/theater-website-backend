@@ -72,21 +72,50 @@ export class SchedulesService {
     });
 
     if (existing && existing.id !== id) {
-      throw new BadRequestException(
-        'Another schedule already exists with this movie, hall, and start time',
+      throw new Error(
+        'Schedule already exists with this movie, hall, and start time',
       );
     }
+    const schedule = await this.findOne(id);
+    Object.assign(schedule, updateScheduleDto);
 
-    return this.schedulesRepository.update(id, updateScheduleDto);
+    try {
+      return await this.schedulesRepository.save(schedule);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: `Failed to update schedule with ID ${id}`,
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error,
+        },
+      );
+    }
   }
 
   async remove(id: string) {
     const schedule = await this.findOne(id);
+
     try {
-      return await this.schedulesRepository.remove(schedule);
+      await this.schedulesRepository.remove(schedule);
+
+      return {
+        status: HttpStatus.OK,
+        message: `Schedule with ID ${id} has been removed successfully`,
+      };
     } catch (error) {
-      console.error('Error removing schedule:', error);
-      throw error;
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: `Failed to remove schedule with ID ${id}`,
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error,
+        },
+      );
     }
   }
 }
