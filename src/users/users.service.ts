@@ -2,6 +2,8 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -41,12 +43,39 @@ export class UsersService {
     return this.usersRepository.find();
   }
 
-  findOne(id: string) {
-    return this.usersRepository.findOne({ where: { id } });
+  async findOne(id: string) {
+    try {
+      const user = await this.usersRepository.findOne({ where: { id } });
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+      return user;
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'User not found',
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error,
+        },
+      );
+    }
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
-    return this.usersRepository.update(id, updateUserDto);
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.findOne(id);
+
+    Object.assign(user, updateUserDto);
+
+    try {
+      return await this.usersRepository.save(user);
+    } catch (error) {
+      console.error('Error saving updated user:', error);
+      throw error;
+    }
   }
 
   async remove(id: string) {

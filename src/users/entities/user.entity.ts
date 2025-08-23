@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 @Entity('Users')
 export class User {
@@ -18,6 +18,22 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @ApiPropertyOptional({
+    example: [
+      {
+        id: 1,
+        totalPrice: 45.0,
+        status: 'BOOKED',
+      },
+      {
+        id: 2,
+        totalPrice: 12.5,
+        status: 'EXPIRED',
+      },
+    ],
+    description: 'A list of orders placed by this user.',
+    type: () => [Order],
+  })
   @OneToMany(() => Order, (order) => order.user)
   order: Order[];
 

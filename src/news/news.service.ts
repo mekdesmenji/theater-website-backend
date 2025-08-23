@@ -36,15 +36,56 @@ export class NewsService {
     return this.newsRepository.find();
   }
 
-  findOne(id: string) {
-    return this.newsRepository.findOne({ where: { id } });
+  async findOne(id: string) {
+    try {
+      const news = await this.newsRepository.findOne({ where: { id } });
+
+      if (!news) {
+        throw new Error('News not found');
+      }
+      return news;
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'News not found',
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error,
+        },
+      );
+    }
   }
 
-  update(id: string, updateNewsDto: UpdateNewsDto) {
-    return this.newsRepository.update(id, updateNewsDto);
+  async update(id: string, updateNewsDto: UpdateNewsDto) {
+    const news = await this.findOne(id);
+
+    Object.assign(news, updateNewsDto);
+
+    try {
+      return await this.newsRepository.save(news);
+    } catch (error) {
+      console.error('Error saving updated news:', error);
+      throw error;
+    }
   }
 
-  remove(id: string) {
-    return this.newsRepository.delete(id);
+  async remove(id: string) {
+    try {
+      const news = await this.newsRepository.findOne({ where: { id } });
+
+      if (!news) {
+        throw new HttpException(
+          `News with ID ${id} not found`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      return await this.newsRepository.remove(news);
+    } catch (error) {
+      console.error('Error removing news:', error);
+      throw error;
+    }
   }
 }

@@ -54,9 +54,10 @@ export class Order {
   @Column({ type: 'uuid', nullable: true })
   user_id: string | null;
 
-  @ApiProperty({
-    example: 'schedule456',
-    description: 'ID of the selected schedule',
+  @ApiPropertyOptional({
+    example: null,
+    description:
+      'The schedule associated with this order. It will be set to null if the schedule is deleted.',
     type: () => Schedule,
   })
   @ManyToOne(() => Schedule, (schedule) => schedule.order, {
@@ -69,7 +70,7 @@ export class Order {
     example: 'schedule456',
     description: 'ID of the selected schedule',
   })
-  @Column({ type: 'uuid' })
+  @Column({ type: 'uuid', nullable: true })
   schedule_id: string | null;
 
   @ApiProperty({ example: '2025-08-20', description: 'Date of the show' })

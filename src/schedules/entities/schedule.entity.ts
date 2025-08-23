@@ -10,7 +10,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Movie } from '../../movies/entities/movie.entity';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Order } from 'src/orders/entities/order.entity';
 
 @Entity('Schedules')
@@ -23,6 +23,22 @@ export class Schedule {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @ApiPropertyOptional({
+    example: [
+      {
+        id: 1,
+        totalPrice: 25.5,
+        status: 'BOOKED',
+      },
+      {
+        id: 2,
+        totalPrice: 42.0,
+        status: 'EXPIRED',
+      },
+    ],
+    description: 'A list of orders associated with this schedule.',
+    type: () => [Order],
+  })
   @OneToMany(() => Order, (order) => order.schedule)
   order: Order[];
 
@@ -33,6 +49,16 @@ export class Schedule {
   @Column({ type: 'uuid' })
   movie_id: string;
 
+  @ApiPropertyOptional({
+    example: {
+      id: 456,
+      title: 'Inception',
+      director: 'Christopher Nolan',
+    },
+    description:
+      'The movie associated with this schedule. It will be deleted if the movie is deleted.',
+    type: () => Movie,
+  })
   @ManyToOne(() => Movie, (movie) => movie.schedules, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'movie_id' })
   movie: Movie;

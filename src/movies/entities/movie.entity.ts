@@ -1,5 +1,5 @@
 import { Schedule } from '../../schedules/entities/schedule.entity';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -23,6 +23,26 @@ export class Movie {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @ApiPropertyOptional({
+    example: [
+      {
+        id: '0000-0000-0000-0001',
+        movie_id: '0000-0000-0000-0000',
+        hall: 1,
+        start_time: '2023-10-01T14:00:00Z',
+        end_time: '2023-10-01T16:30:00Z',
+      },
+      {
+        id: '0000-0000-0000-0002',
+        movie_id: '0000-0000-0000-0000',
+        hall: 2,
+        start_time: '2023-10-01T17:00:00Z',
+        end_time: '2023-10-01T19:30:00Z',
+      },
+    ],
+    description: 'A list of schedules associated with this movie.',
+    type: () => [Schedule],
+  })
   @OneToMany(() => Schedule, (schedule) => schedule.movie)
   schedules: Schedule[];
 
