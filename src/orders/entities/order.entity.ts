@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  BeforeInsert,
 } from 'typeorm';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { User } from 'src/users/entities/user.entity';
@@ -33,6 +34,21 @@ export class Order {
   })
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @ApiProperty({
+    example: '48239',
+    description:
+      'Unique 5-digit public ID for the order, sent to the user after booking',
+    uniqueItems: true,
+    nullable: true,
+  })
+  @Column({ unique: true, nullable: true })
+  public_id: string;
+
+  @BeforeInsert()
+  generatePublicId() {
+    this.public_id = Math.floor(10000 + Math.random() * 90000).toString();
+  }
 
   @ManyToOne(() => User, (user) => user.order, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'user_id' })

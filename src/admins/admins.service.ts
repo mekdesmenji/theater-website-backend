@@ -61,18 +61,40 @@ export class AdminsService {
     try {
       return await this.adminsRepository.save(admin);
     } catch (error) {
-      console.error('Error saving updated admin:', error);
-      throw error;
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: `Failed to update admin with ID ${id}`,
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error,
+        },
+      );
     }
   }
 
   async remove(id: string) {
     const admin = await this.findOne(id);
+
     try {
-      return await this.adminsRepository.remove(admin);
+      await this.adminsRepository.remove(admin);
+
+      return {
+        status: HttpStatus.OK,
+        message: `Admin with ID ${id} has been removed successfully`,
+      };
     } catch (error) {
-      console.error('Error removing admin:', error);
-      throw error;
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: `Failed to remove admin with ID ${id}`,
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error,
+        },
+      );
     }
   }
 }

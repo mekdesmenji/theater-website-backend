@@ -75,18 +75,40 @@ export class HistorysService {
     try {
       return await this.historyRepository.save(history);
     } catch (error) {
-      console.error('Error saving updated history:', error);
-      throw error;
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: `Failed to update history with ID ${id}`,
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error,
+        },
+      );
     }
   }
 
   async remove(id: string) {
     const history = await this.findOne(id);
+
     try {
-      return await this.historyRepository.remove(history);
+      await this.historyRepository.remove(history);
+
+      return {
+        status: HttpStatus.OK,
+        message: `History with ID ${id} has been removed successfully`,
+      };
     } catch (error) {
-      console.error('Error removing history:', error);
-      throw error;
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: `Failed to remove history with ID ${id}`,
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error,
+        },
+      );
     }
   }
 }

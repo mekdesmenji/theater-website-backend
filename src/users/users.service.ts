@@ -1,6 +1,5 @@
 import {
   Injectable,
-  NotFoundException,
   BadRequestException,
   HttpException,
   HttpStatus,
@@ -73,26 +72,50 @@ export class UsersService {
     try {
       return await this.usersRepository.save(user);
     } catch (error) {
-      console.error('Error saving updated user:', error);
-      throw error;
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: `Failed to update user with ID ${id}`,
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error,
+        },
+      );
     }
   }
 
   async remove(id: string) {
-    const user = await this.usersRepository.findOne({ where: { id } });
+    const user = await this.findOne(id);
 
-    if (!user) throw new NotFoundException('User not found');
+    try {
+      await this.ordersRepository
+        .createQueryBuilder()
+        .update(Order)
+        .set({
+          deleted_user_info: `${user.customer_name} (${user.email})`,
+          user_id: null,
+        })
+        .where('user_id = :id', { id: user.id })
+        .execute();
 
-    await this.ordersRepository
-      .createQueryBuilder()
-      .update(Order)
-      .set({
-        deleted_user_info: `${user.customer_name} (${user.email})`,
-        user_id: null,
-      })
-      .where('user_id = :id', { id: user.id })
-      .execute();
+      await this.usersRepository.remove(user);
 
-    return this.usersRepository.remove(user);
+      return {
+        status: HttpStatus.OK,
+        message: `User with ID ${id} has been removed successfully`,
+      };
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: `Failed to remove user with ID ${id}`,
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error,
+        },
+      );
+    }
   }
 }

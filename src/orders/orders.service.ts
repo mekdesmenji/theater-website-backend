@@ -11,6 +11,20 @@ export class OrdersService {
     private ordersRepository: Repository<Order>,
   ) {}
 
+  // async create(createOrderDto: CreateOrderDto) {
+  //   const order = this.ordersRepository.create(createOrderDto as any);
+
+  //   try {
+  //     return await this.ordersRepository.save(order);
+  //   } catch (error) {
+  //     if (error.code === '23505') {
+  //       order.public_id = Math.floor(10000 + Math.random() * 90000).toString();
+  //       return await this.ordersRepository.save(order);
+  //     }
+  //     throw error;
+  //   }
+  // }
+
   create(createOrderDto: CreateOrderDto) {
     const order = this.ordersRepository.create(createOrderDto);
     return this.ordersRepository.save(order);

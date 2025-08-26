@@ -66,26 +66,40 @@ export class NewsService {
     try {
       return await this.newsRepository.save(news);
     } catch (error) {
-      console.error('Error saving updated news:', error);
-      throw error;
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: `Failed to update news with ID ${id}`,
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error,
+        },
+      );
     }
   }
 
   async remove(id: string) {
+    const news = await this.findOne(id);
+
     try {
-      const news = await this.newsRepository.findOne({ where: { id } });
+      await this.newsRepository.remove(news);
 
-      if (!news) {
-        throw new HttpException(
-          `News with ID ${id} not found`,
-          HttpStatus.NOT_FOUND,
-        );
-      }
-
-      return await this.newsRepository.remove(news);
+      return {
+        status: HttpStatus.OK,
+        message: `News with ID ${id} has been removed successfully`,
+      };
     } catch (error) {
-      console.error('Error removing news:', error);
-      throw error;
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: `Failed to remove order with ID ${id}`,
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error,
+        },
+      );
     }
   }
 }
