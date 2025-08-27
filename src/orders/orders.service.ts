@@ -4,30 +4,70 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order } from './entities/order.entity';
+import { User } from 'src/users/entities/user.entity';
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectRepository(Order)
     private ordersRepository: Repository<Order>,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
   ) {}
 
-  // async create(createOrderDto: CreateOrderDto) {
-  //   const order = this.ordersRepository.create(createOrderDto as any);
+  private buildSearchTags(order: Order, user?: User | null) {
+    const parts = [
+      user?.customer_name ?? '',
+      user?.email ?? '',
+      order.status ?? '',
+      order.payment_method ?? '',
+      order.show_date ?? '',
+      order.show_time ?? '',
+      order.public_id ?? '',
+      order.deleted_user_info ?? '',
+      Array.isArray(order.seats) ? order.seats.join(' ') : '',
+    ];
+    return parts.filter(Boolean).join(' ').trim();
+  }
 
-  //   try {
-  //     return await this.ordersRepository.save(order);
-  //   } catch (error) {
-  //     if (error.code === '23505') {
-  //       order.public_id = Math.floor(10000 + Math.random() * 90000).toString();
-  //       return await this.ordersRepository.save(order);
-  //     }
-  //     throw error;
-  //   }
-  // }
+  private async generateUniquePublicId(): Promise<string> {
+    const randomId = Math.floor(10000 + Math.random() * 90000).toString();
+    const existing = await this.ordersRepository.findOne({
+      where: { public_id: randomId },
+    });
 
-  create(createOrderDto: CreateOrderDto) {
-    const order = this.ordersRepository.create(createOrderDto);
-    return this.ordersRepository.save(order);
+    if (existing) {
+      return this.generateUniquePublicId();
+    }
+
+    return randomId;
+  }
+
+  async create(createOrderDto: CreateOrderDto) {
+    try {
+      let user: User | null = null;
+
+      if (createOrderDto.user_id) {
+        user = await this.usersRepository.findOne({
+          where: { id: createOrderDto.user_id },
+        });
+      }
+
+      const order = this.ordersRepository.create(createOrderDto);
+
+      order.public_id = await this.generateUniquePublicId();
+
+      order.searchTags = this.buildSearchTags(order, user);
+
+      return this.ordersRepository.save(order);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Failed to create order. Please try again.',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   findAll() {
@@ -64,6 +104,15 @@ export class OrdersService {
 
     Object.assign(order, updateOrderDto);
 
+    let user: User | null = null;
+    if (order.user_id) {
+      user = await this.usersRepository.findOne({
+        where: { id: order.user_id },
+      });
+    }
+
+    order.searchTags = this.buildSearchTags(order, user);
+
     try {
       return await this.ordersRepository.save(order);
     } catch (error) {
@@ -79,6 +128,27 @@ export class OrdersService {
       );
     }
   }
+
+  // async update(id: string, updateOrderDto: UpdateOrderDto) {
+  //   const order = await this.findOne(id);
+
+  //   Object.assign(order, updateOrderDto);
+
+  //   try {
+  //     return await this.ordersRepository.save(order);
+  // } catch (error) {
+  //   throw new HttpException(
+  //     {
+  //       status: HttpStatus.BAD_REQUEST,
+  //       error: `Failed to update order with ID ${id}`,
+  //     },
+  //     HttpStatus.BAD_REQUEST,
+  //     {
+  //       cause: error,
+  //     },
+  //   );
+  // }
+  // }
 
   async remove(id: string) {
     const order = await this.findOne(id);
@@ -102,5 +172,13 @@ export class OrdersService {
         },
       );
     }
+  }
+
+  async search(q: string) {
+    return this.ordersRepository
+      .createQueryBuilder('o')
+      .where('o.searchTags ILIKE :q', { q: `%${q}%` })
+      .orderBy('o.created_at', 'DESC')
+      .getMany();
   }
 }

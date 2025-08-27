@@ -26,7 +26,7 @@ export class AdminsController {
   })
   @ApiResponse({ status: 400, description: 'Validation failed' })
   create(@Body() createAdminDto: CreateAdminDto) {
-    return this.adminsService.create(createAdminDto);
+    return this.adminsService.signup(createAdminDto);
   }
 
   @Get()

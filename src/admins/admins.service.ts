@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Admin } from './entities/admin.entity';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+
 @Injectable()
 export class AdminsService {
   constructor(
@@ -12,16 +14,40 @@ export class AdminsService {
     private adminsRepository: Repository<Admin>,
   ) {}
 
-  async create(createAdminDto: CreateAdminDto) {
-    const admin = this.adminsRepository.create(createAdminDto);
+  async signup(createAdminDto: CreateAdminDto): Promise<Admin> {
+    const hashedPassword = await bcrypt.hash(createAdminDto.password, 10);
+
+    const admin = this.adminsRepository.create({
+      first_name: createAdminDto.first_name,
+      last_name: createAdminDto.last_name,
+      email: createAdminDto.email,
+      role: createAdminDto.role,
+      status: createAdminDto.status,
+      password: hashedPassword,
+    });
 
     try {
       return await this.adminsRepository.save(admin);
     } catch (error) {
       if (error.code === '23505') {
-        throw new BadRequestException('Email already exists');
+        throw new HttpException(
+          {
+            status: HttpStatus.CONFLICT,
+            error: 'Admin with this email already exists',
+          },
+          HttpStatus.CONFLICT,
+          { cause: error },
+        );
       }
-      throw error;
+
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Failed to create admin',
+        },
+        HttpStatus.BAD_REQUEST,
+        { cause: error },
+      );
     }
   }
 

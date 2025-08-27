@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ApiTags, ApiResponse } from '@nestjs/swagger';
 import { OrdersService } from './orders.service';
@@ -37,6 +38,20 @@ export class OrdersController {
   })
   findAll() {
     return this.ordersService.findAll();
+  }
+
+  @Get('search')
+  @ApiResponse({
+    status: 200,
+    description: 'List of orders matching the search query',
+    type: [Order],
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request, invalid query',
+  })
+  search(@Query('q') q: string) {
+    return this.ordersService.search(q ?? '');
   }
 
   @Get(':id')
