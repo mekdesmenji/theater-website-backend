@@ -15,6 +15,20 @@ export class AdminsService {
   ) {}
 
   async signup(createAdminDto: CreateAdminDto): Promise<Admin> {
+    const existingAdmin = await this.adminsRepository.findOne({
+      where: { email: createAdminDto.email },
+    });
+
+    if (existingAdmin) {
+      throw new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          error: 'Admin with this email already exists',
+        },
+        HttpStatus.CONFLICT,
+      );
+    }
+
     const hashedPassword = await bcrypt.hash(createAdminDto.password, 10);
 
     const admin = this.adminsRepository.create({
@@ -29,17 +43,6 @@ export class AdminsService {
     try {
       return await this.adminsRepository.save(admin);
     } catch (error) {
-      if (error.code === '23505') {
-        throw new HttpException(
-          {
-            status: HttpStatus.CONFLICT,
-            error: 'Admin with this email already exists',
-          },
-          HttpStatus.CONFLICT,
-          { cause: error },
-        );
-      }
-
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
