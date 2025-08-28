@@ -54,6 +54,16 @@ export class AdminsService {
     }
   }
 
+  async validateAdmin(email: string, password: string) {
+    const admin = await this.adminsRepository.findOne({ where: { email } });
+    if (!admin) return null;
+
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (!isMatch) return null;
+
+    return admin;
+  }
+
   findAll() {
     return this.adminsRepository.find();
   }

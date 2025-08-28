@@ -6,17 +6,25 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
+  ForbiddenException,
 } from '@nestjs/common';
 import { ApiTags, ApiResponse } from '@nestjs/swagger';
 import { AdminsService } from './admins.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 import { Admin } from './entities/admin.entity';
+import { JwtService } from '@nestjs/jwt';
+import { JwtGuard } from './admins.guard';
 
 @ApiTags('Admins')
 @Controller('admins')
 export class AdminsController {
-  constructor(private readonly adminsService: AdminsService) {}
+  constructor(
+    private readonly adminsService: AdminsService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   @Post()
   @ApiResponse({
@@ -27,6 +35,23 @@ export class AdminsController {
   @ApiResponse({ status: 400, description: 'Validation failed' })
   create(@Body() createAdminDto: CreateAdminDto) {
     return this.adminsService.signup(createAdminDto);
+  }
+
+  @Post('login')
+  async login(
+    @Body('email') email: string,
+    @Body('password') password: string,
+  ) {
+    const admin = await this.adminsService.validateAdmin(email, password);
+    if (!admin) return { message: 'Wrong email or password' };
+
+    const payload = { sub: admin.id, role: admin.role };
+    const token = this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+
+    return { access_token: token };
   }
 
   @Get()
@@ -58,6 +83,7 @@ export class AdminsController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtGuard)
   @ApiResponse({
     status: 200,
     description: 'Admin deleted successfully',
@@ -65,6 +91,10 @@ export class AdminsController {
   })
   @ApiResponse({ status: 404, description: 'Admin not found' })
   remove(@Param('id') id: string) {
+    // @Req() req
+    // if (req.user.role !== 'admin') {
+    //   throw new ForbiddenException('Only admins can delete admins!');
+    // }
     return this.adminsService.remove(id);
   }
 }
