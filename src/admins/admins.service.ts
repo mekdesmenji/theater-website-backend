@@ -69,6 +69,7 @@ export class AdminsService {
   }
 
   async findOne(id: string) {
+    console.log('Finding admin with ID:', id);
     try {
       const admin = await this.adminsRepository.findOne({
         where: { id },

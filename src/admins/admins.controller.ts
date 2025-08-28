@@ -8,7 +8,8 @@ import {
   Delete,
   UseGuards,
   Req,
-  ForbiddenException,
+  ClassSerializerInterceptor,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags, ApiResponse } from '@nestjs/swagger';
 import { AdminsService } from './admins.service';
@@ -20,6 +21,7 @@ import { JwtGuard } from './admins.guard';
 
 @ApiTags('Admins')
 @Controller('admins')
+@UseInterceptors(ClassSerializerInterceptor)
 export class AdminsController {
   constructor(
     private readonly adminsService: AdminsService,
@@ -64,6 +66,16 @@ export class AdminsController {
     return this.adminsService.findAll();
   }
 
+  @Get('me')
+  @UseGuards(JwtGuard)
+  @ApiResponse({ status: 200, description: 'Admin details', type: Admin })
+  @ApiResponse({ status: 404, description: 'Admin not found' })
+  findMe(@Req() req: Request) {
+    const admin = req['user'];
+    console.log('Request User:', admin, admin?.sub);
+    return this.adminsService.findOne(admin.sub);
+  }
+
   @Get(':id')
   @ApiResponse({ status: 200, description: 'Admin details', type: Admin })
   @ApiResponse({ status: 404, description: 'Admin not found' })
@@ -91,10 +103,6 @@ export class AdminsController {
   })
   @ApiResponse({ status: 404, description: 'Admin not found' })
   remove(@Param('id') id: string) {
-    // @Req() req
-    // if (req.user.role !== 'admin') {
-    //   throw new ForbiddenException('Only admins can delete admins!');
-    // }
     return this.adminsService.remove(id);
   }
 }

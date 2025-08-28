@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 
 export enum AdminRole {
   ADMIN = 'ADMIN',
@@ -44,6 +45,7 @@ export class Admin {
     example: 'password123',
     description: 'Password of the admin',
   })
+  @Exclude()
   @Column({ type: 'text' })
   password: string;
 
