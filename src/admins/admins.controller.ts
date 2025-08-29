@@ -11,7 +11,7 @@ import {
   ClassSerializerInterceptor,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiTags, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AdminsService } from './admins.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
@@ -20,6 +20,7 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtGuard } from './admins.guard';
 import { Roles } from './adminsRoles.decorator';
 import { RolesGuard } from './adminsRoles.guard';
+import { LoginDto } from './dto/login.dto';
 
 @ApiTags('Admins')
 @Controller('admins')
@@ -42,6 +43,25 @@ export class AdminsController {
   }
 
   @Post('login')
+  @ApiResponse({
+    status: 201,
+    description: 'Admin logged in successfully',
+    type: LoginDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Wrong email or password',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        email: { type: 'string', example: 'admin@example.com' },
+        password: { type: 'string', example: 'strongpassword123' },
+      },
+      required: ['email', 'password'],
+    },
+  })
   async login(
     @Body('email') email: string,
     @Body('password') password: string,
@@ -98,7 +118,7 @@ export class AdminsController {
 
   @Delete(':id')
   @UseGuards(JwtGuard, RolesGuard)
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'MANAGER')
   @ApiResponse({
     status: 200,
     description: 'Admin deleted successfully',

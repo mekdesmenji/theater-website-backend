@@ -41,10 +41,6 @@ export class Admin {
   @Column({ type: 'text' })
   last_name: string;
 
-  @ApiProperty({
-    example: 'password123',
-    description: 'Password of the admin',
-  })
   @Exclude()
   @Column({ type: 'text' })
   password: string;
