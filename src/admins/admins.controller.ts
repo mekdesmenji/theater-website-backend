@@ -18,6 +18,8 @@ import { UpdateAdminDto } from './dto/update-admin.dto';
 import { Admin } from './entities/admin.entity';
 import { JwtService } from '@nestjs/jwt';
 import { JwtGuard } from './admins.guard';
+import { Roles } from './adminsRoles.decorator';
+import { RolesGuard } from './adminsRoles.guard';
 
 @ApiTags('Admins')
 @Controller('admins')
@@ -95,7 +97,8 @@ export class AdminsController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles('ADMIN')
   @ApiResponse({
     status: 200,
     description: 'Admin deleted successfully',
