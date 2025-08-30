@@ -7,12 +7,16 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiResponse } from '@nestjs/swagger';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order } from './entities/order.entity';
+import { Roles } from '../admins/adminsRoles.decorator';
+import { RolesGuard } from '../admins/adminsRoles.guard';
+import { JwtGuard } from 'src/admins/admins.guard';
 
 @ApiTags('Orders')
 @Controller('orders')
@@ -77,6 +81,8 @@ export class OrdersController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles('ADMIN')
   @ApiResponse({
     status: 200,
     description: 'Order deleted successfully',

@@ -45,11 +45,6 @@ export class Order {
   @Column({ unique: true, nullable: true })
   public_id: string;
 
-  // @BeforeInsert()
-  // generatePublicId() {
-  //   this.public_id = Math.floor(10000 + Math.random() * 90000).toString();
-  // }
-
   @ManyToOne(() => User, (user) => user.order, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'user_id' })
   @ApiPropertyOptional({
