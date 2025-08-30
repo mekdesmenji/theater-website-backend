@@ -8,6 +8,11 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
 
+  app.enableCors({
+    origin: 'http://localhost:3001',
+    credentials: true,
+  });
+
   const config = new DocumentBuilder()
     .setTitle('Theater Website API')
     .setDescription('API for managing movies, schedules, and bookings')
