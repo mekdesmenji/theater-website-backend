@@ -10,6 +10,7 @@ import {
   Req,
   ClassSerializerInterceptor,
   UseInterceptors,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AdminsService } from './admins.service';
@@ -21,6 +22,7 @@ import { JwtGuard } from './admins.guard';
 import { Roles } from './adminsRoles.decorator';
 import { RolesGuard } from './adminsRoles.guard';
 import { LoginDto } from './dto/login.dto';
+import { Response } from 'express';
 
 @ApiTags('Admins')
 @Controller('admins')
@@ -67,7 +69,7 @@ export class AdminsController {
     @Body('password') password: string,
   ) {
     const admin = await this.adminsService.validateAdmin(email, password);
-    if (!admin) return { message: 'Wrong email or password' };
+    if (!admin) throw new UnauthorizedException('Wrong email or password');
 
     const payload = { sub: admin.id, role: admin.role };
     const token = this.jwtService.sign(payload, {
