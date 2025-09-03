@@ -22,7 +22,6 @@ import { JwtGuard } from './admins.guard';
 import { Roles } from './adminsRoles.decorator';
 import { RolesGuard } from './adminsRoles.guard';
 import { LoginDto } from './dto/login.dto';
-import { Response } from 'express';
 
 @ApiTags('Admins')
 @Controller('admins')
