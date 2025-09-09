@@ -10,6 +10,8 @@ import { HistorysModule } from './historys/historys.module';
 import { NewsModule } from './news/news.module';
 import { SettingsModule } from './settings/settings.module';
 import { OrdersModule } from './orders/orders.module';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { TicketsModule } from './tickets/tickets.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { OrdersModule } from './orders/orders.module';
     NewsModule,
     SettingsModule,
     OrdersModule,
+    DashboardModule,
+    TicketsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

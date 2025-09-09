@@ -14,10 +14,10 @@ export class MoviesService {
   ) {}
 
   async create(createMovieDto: CreateMovieDto) {
-    const movieexists = await this.movieRepository.findOne({
+    const movieExists = await this.movieRepository.findOne({
       where: { title: createMovieDto.title },
     });
-    if (movieexists) {
+    if (movieExists) {
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,

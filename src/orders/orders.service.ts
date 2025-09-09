@@ -129,27 +129,6 @@ export class OrdersService {
     }
   }
 
-  // async update(id: string, updateOrderDto: UpdateOrderDto) {
-  //   const order = await this.findOne(id);
-
-  //   Object.assign(order, updateOrderDto);
-
-  //   try {
-  //     return await this.ordersRepository.save(order);
-  // } catch (error) {
-  //   throw new HttpException(
-  //     {
-  //       status: HttpStatus.BAD_REQUEST,
-  //       error: `Failed to update order with ID ${id}`,
-  //     },
-  //     HttpStatus.BAD_REQUEST,
-  //     {
-  //       cause: error,
-  //     },
-  //   );
-  // }
-  // }
-
   async remove(id: string) {
     const order = await this.findOne(id);
 
