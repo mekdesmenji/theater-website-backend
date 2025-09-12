@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Movie } from './entities/movie.entity';
+import { Movie, MovieStatus } from './entities/movie.entity';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
@@ -28,6 +28,13 @@ export class MoviesService {
     }
     const movie = this.movieRepository.create(createMovieDto);
     return this.movieRepository.save(movie);
+  }
+
+  async getComingSoonMovies(): Promise<Movie[]> {
+    return this.movieRepository.find({
+      where: { status: MovieStatus.COMING_SOON },
+      select: ['id', 'title', 'release_date', 'poster', 'genres'],
+    });
   }
 
   findAll() {

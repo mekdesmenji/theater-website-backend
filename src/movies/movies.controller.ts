@@ -28,6 +28,16 @@ export class MoviesController {
     return this.moviesService.create(createMovieDto);
   }
 
+  @Get('coming-soon')
+  @ApiResponse({
+    status: 200,
+    description: 'List of movies that are coming soon',
+    type: [Movie],
+  })
+  async getComingSoon(): Promise<Movie[]> {
+    return this.moviesService.getComingSoonMovies();
+  }
+
   @Get()
   @ApiResponse({
     status: 200,
