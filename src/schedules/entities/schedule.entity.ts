@@ -74,7 +74,13 @@ export class Schedule {
     example: '10:00:00',
     description: 'Start time of the schedule',
   })
-  @Column({ type: 'time' })
+  @Column({
+    type: 'time',
+    transformer: {
+      to: (value: string | null) => value,
+      from: (value: string | null) => (value ? value.slice(0, 5) : value),
+    },
+  })
   start_time: string;
 
   @ApiProperty({

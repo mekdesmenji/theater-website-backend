@@ -1,5 +1,5 @@
 import { Schedule } from '../../schedules/entities/schedule.entity';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -23,7 +23,7 @@ export class Movie {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     example: [
       {
         id: '0000-0000-0000-0001',

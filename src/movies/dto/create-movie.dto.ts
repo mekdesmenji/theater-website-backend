@@ -66,6 +66,5 @@ export class CreateMovieDto {
     description: 'URL of the movie poster',
   })
   @IsString()
-  poster: string;
+  poster?: string;
 }
-
