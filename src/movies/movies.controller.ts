@@ -145,7 +145,7 @@ export class MoviesController {
     @UploadedFile() poster: Express.Multer.File,
     @Body() body: any,
   ) {
-    const genresArray = body.genres ? JSON.parse(body.genres) : [];
+    const genresArray = body.genres ? JSON.parse(body.genres) : undefined;
     const updateMovieDto: UpdateMovieDto = {
       ...body,
       genres: genresArray,

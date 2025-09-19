@@ -67,7 +67,8 @@ export class MoviesService {
 
   async update(id: string, updateMovieDto: UpdateMovieDto) {
     const movie = await this.findOne(id);
-
+    console.log('updateMovieDto: ', updateMovieDto);
+    console.log('movie: ', movie);
     Object.assign(movie, updateMovieDto);
 
     try {
