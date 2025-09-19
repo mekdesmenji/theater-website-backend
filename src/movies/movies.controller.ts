@@ -1,4 +1,4 @@
-import { ApiTags, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiResponse, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import {
   Controller,
   Get,
@@ -24,37 +24,6 @@ import { diskStorage } from 'multer';
 export class MoviesController {
   constructor(private readonly moviesService: MoviesService) {}
 
-  // @Post()
-  // @UseInterceptors(
-  //   FileInterceptor('poster', {
-  //     storage: diskStorage({
-  //       destination: './uploads/posters',
-  //       filename: (req, file, cb) => {
-  //         const uniqueSuffix =
-  //           Date.now() + '-' + Math.round(Math.random() * 1e9);
-  //         const ext = extname(file.originalname);
-  //         cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
-  //       },
-  //     }),
-  //   }),
-  // )
-  // @ApiResponse({
-  //   status: 201,
-  //   description: 'Movie created successfully',
-  //   type: Movie,
-  // })
-  // @ApiResponse({ status: 400, description: 'Validation failed' })
-  // create(
-  //   @UploadedFile() poster: Express.Multer.File,
-  //   @Body() createMovieDto: CreateMovieDto,
-  // ) {
-  //   if (poster) createMovieDto.poster = poster.filename;
-  //   if (typeof createMovieDto.genres === 'string') {
-  //     createMovieDto.genres = JSON.parse(createMovieDto.genres);
-  //   }
-  //   return this.moviesService.create(createMovieDto);
-  // }
-
   @Post()
   @UseInterceptors(
     FileInterceptor('poster', {
@@ -69,6 +38,51 @@ export class MoviesController {
       }),
     }),
   )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        title: { type: 'string', example: 'Inception' },
+        release_date: { type: 'string', example: '2025-09-17' },
+        duration: { type: 'string', example: '148 min' },
+        status: { type: 'string', example: 'NOW_SHOWING' },
+        language: { type: 'string', example: 'English' },
+        age_rating: { type: 'string', example: 'PG-13' },
+        genres: {
+          type: 'array',
+          items: { type: 'string' },
+          example: ['Action', 'Sci-Fi'],
+        },
+        poster: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Movie successfully created',
+    schema: {
+      example: {
+        id: 1,
+        title: 'Inception',
+        release_date: '2025-09-17',
+        duration: '148 min',
+        status: 'NOW_SHOWING',
+        language: 'English',
+        age_rating: 'PG-13',
+        genres: ['Action', 'Sci-Fi'],
+        poster: 'poster-123456789.jpg',
+      },
+    },
+    type: Movie,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request – Invalid input or missing file',
+  })
   create(@UploadedFile() poster: Express.Multer.File, @Body() body: any) {
     const genresArray = body.genres ? JSON.parse(body.genres) : [];
     const movieData: CreateMovieDto = {
@@ -107,13 +121,40 @@ export class MoviesController {
   }
 
   @Patch(':id')
+  @UseInterceptors(
+    FileInterceptor('poster', {
+      storage: diskStorage({
+        destination: './uploads/posters',
+        filename: (req, file, cb) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);
+          cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+        },
+      }),
+    }),
+  )
   @ApiResponse({
     status: 200,
     description: 'Movie updated successfully',
     type: Movie,
   })
   @ApiResponse({ status: 404, description: 'Movie not found' })
-  update(@Param('id') id: string, @Body() updateMovieDto: UpdateMovieDto) {
+  update(
+    @Param('id') id: string,
+    @UploadedFile() poster: Express.Multer.File,
+    @Body() body: any,
+  ) {
+    const genresArray = body.genres ? JSON.parse(body.genres) : [];
+    const updateMovieDto: UpdateMovieDto = {
+      ...body,
+      genres: genresArray,
+    };
+
+    if (poster) {
+      updateMovieDto.poster = poster.filename;
+    }
+
     return this.moviesService.update(id, updateMovieDto);
   }
 
