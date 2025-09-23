@@ -17,6 +17,7 @@ import { Order } from './entities/order.entity';
 import { Roles } from '../admins/adminsRoles.decorator';
 import { RolesGuard } from '../admins/adminsRoles.guard';
 import { JwtGuard } from 'src/admins/admins.guard';
+import { FilterOrdersDto } from './dto/filter-order.dto';
 
 @ApiTags('Orders')
 @Controller('orders')
@@ -58,6 +59,12 @@ export class OrdersController {
     return this.ordersService.search(q ?? '');
   }
 
+  @Get('filter')
+  getFilteredOrders(@Query() filterDto: FilterOrdersDto) {
+    console.log('Incoming filter:', filterDto);
+    return this.ordersService.getFilteredOrders(filterDto);
+  }
+
   @Get(':id')
   @ApiResponse({
     status: 200,
@@ -82,7 +89,7 @@ export class OrdersController {
 
   @Delete(':id')
   @UseGuards(JwtGuard, RolesGuard)
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'MANAGER')
   @ApiResponse({
     status: 200,
     description: 'Order deleted successfully',

@@ -16,6 +16,18 @@ export enum PaymentMethod {
   CBE_BIRR = 'CBE_BIRR',
 }
 
+export enum PriceRange {
+  LOW = 'LOW', // e.g., < 100
+  MEDIUM = 'MEDIUM', // e.g., 100-500
+  HIGH = 'HIGH', // e.g., >500
+}
+
+export enum DateRange {
+  TODAY = 'TODAY',
+  THIS_WEEK = 'THIS_WEEK',
+  THIS_MONTH = 'THIS_MONTH',
+}
+
 export enum OrderStatus {
   BOOKED = 'BOOKED',
   CONFIRMED = 'CONFIRMED',

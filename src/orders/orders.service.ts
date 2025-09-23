@@ -1,10 +1,16 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order } from './entities/order.entity';
 import { User } from 'src/users/entities/user.entity';
+import { FilterOrdersDto } from './dto/filter-order.dto';
 @Injectable()
 export class OrdersService {
   constructor(
@@ -159,5 +165,22 @@ export class OrdersService {
       .where('o.searchTags ILIKE :q', { q: `%${q}%` })
       .orderBy('o.created_at', 'DESC')
       .getMany();
+  }
+
+  async getFilteredOrders(filterDto: FilterOrdersDto) {
+    console.log('FilterDto in service:', filterDto);
+
+    const orders = await this.ordersRepository.find({
+      where: { status: filterDto.status },
+    });
+
+    console.log('Orders found:', orders);
+    console.log('FilterDto:', filterDto, 'Orders length:', orders.length);
+
+    if (!orders || orders.length === 0) {
+      throw new NotFoundException('Order not found');
+    }
+
+    return orders;
   }
 }
