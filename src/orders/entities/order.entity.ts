@@ -16,18 +16,6 @@ export enum PaymentMethod {
   CBE_BIRR = 'CBE_BIRR',
 }
 
-export enum PriceRange {
-  LOW = 'LOW', // e.g., < 100
-  MEDIUM = 'MEDIUM', // e.g., 100-500
-  HIGH = 'HIGH', // e.g., >500
-}
-
-export enum DateRange {
-  TODAY = 'TODAY',
-  THIS_WEEK = 'THIS_WEEK',
-  THIS_MONTH = 'THIS_MONTH',
-}
-
 export enum OrderStatus {
   BOOKED = 'BOOKED',
   CONFIRMED = 'CONFIRMED',
@@ -36,6 +24,18 @@ export enum OrderStatus {
   CHECKED_OUT = 'CHECKED_OUT',
   CANCELLED = 'CANCELLED',
   EXPIRED = 'EXPIRED',
+}
+
+export enum PriceRange {
+  BELOW_500 = 'BELOW_500',
+  BETWEEN_500_1000 = 'BETWEEN_500_1000',
+  ABOVE_1000 = 'ABOVE_1000',
+}
+
+export enum DateRange {
+  LAST_WEEK = 'LAST_WEEK',
+  LAST_MONTH = 'LAST_MONTH',
+  CUSTOM = 'CUSTOM',
 }
 
 @Entity('Orders')

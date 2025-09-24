@@ -1,16 +1,13 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Order } from './entities/order.entity';
+import { Order, DateRange, PriceRange } from './entities/order.entity';
 import { User } from 'src/users/entities/user.entity';
 import { FilterOrdersDto } from './dto/filter-order.dto';
+import { LessThan, Between, MoreThan } from 'typeorm';
+
 @Injectable()
 export class OrdersService {
   constructor(
@@ -168,18 +165,55 @@ export class OrdersService {
   }
 
   async getFilteredOrders(filterDto: FilterOrdersDto) {
-    console.log('FilterDto in service:', filterDto);
+    const { status, priceRange, dateRange, customStart, customEnd } = filterDto;
+    const conditions: any = {};
 
-    const orders = await this.ordersRepository.find({
-      where: { status: filterDto.status },
-    });
-
-    console.log('Orders found:', orders);
-    console.log('FilterDto:', filterDto, 'Orders length:', orders.length);
-
-    if (!orders || orders.length === 0) {
-      throw new NotFoundException('Order not found');
+    if (status) {
+      conditions.status = status;
     }
+
+    if (priceRange) {
+      switch (priceRange) {
+        case PriceRange.BELOW_500:
+          conditions.total_price = LessThan(500);
+          break;
+        case PriceRange.BETWEEN_500_1000:
+          conditions.total_price = Between(500, 1000);
+          break;
+        case PriceRange.ABOVE_1000:
+          conditions.total_price = MoreThan(1000);
+          break;
+      }
+    }
+    console.log('Filter DTO:', filterDto);
+    console.log('Conditions:', conditions);
+
+    if (dateRange) {
+      const today = new Date();
+
+      if (dateRange === DateRange.LAST_WEEK) {
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(today.getDate() - 7);
+        conditions.created_at = Between(sevenDaysAgo, today);
+      } else if (dateRange === DateRange.LAST_MONTH) {
+        const firstDayLastMonth = new Date(
+          today.getFullYear(),
+          today.getMonth() - 1,
+          1,
+        );
+        const lastDayLastMonth = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          0,
+        );
+        conditions.created_at = Between(firstDayLastMonth, lastDayLastMonth);
+      } else if (dateRange === DateRange.CUSTOM && customStart && customEnd) {
+        conditions.created_at = Between(customStart, customEnd);
+      }
+    }
+    console.log('Final conditions:', conditions);
+
+    const orders = await this.ordersRepository.find({ where: conditions });
 
     return orders;
   }
